@@ -1,7 +1,12 @@
-#creating a makefile to run all my programs 
+#creating a makefile to run all my programs
 
+SRC_DIR = src
+OBJ_DIR = obj
+INCLUDE = -I includes
 NAME = libft.a
-SRCS = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c \
+FLAGS = -Wextra -Werror -Wall
+
+SRCS_LIBFT = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c \
 	   ft_isprint.c ft_strlen.c ft_memset.c ft_bzero.c \
 	   ft_memcpy.c ft_memmove.c ft_memchr.c ft_memcmp.c \
 	   ft_strlcpy.c ft_strlcat.c ft_strchr.c ft_strrchr.c \
@@ -9,54 +14,38 @@ SRCS = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c \
 	   ft_atoi.c ft_calloc.c ft_strdup.c ft_substr.c ft_strjoin.c \
 	   ft_strtrim.c ft_split.c ft_putstr_fd.c ft_putchar_fd.c \
 	   ft_putendl_fd.c ft_putnbr_fd.c ft_striteri.c ft_itoa.c \
-	   ft_strmapi.c
+	   ft_strmapi.c ft_lstnew.c ft_lstadd_front.c ft_lstsize.c \
+		ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c \
+		ft_lstiter.c
 
-BONUS = ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
-		ft_lstlast_bonus.c ft_lstadd_back_bonus.c ft_lstdelone_bonus.c \
-		ft_lstiter_bonus.c ft_lstclear_bonus.c
+SRCS_PRINTF = ft_printf/dec_c_str.c \
+				ft_printf/ft_itoa_unsigned.c \
+				ft_printf/ft_printf.c \
+				ft_printf/ft_hexadecimal.c
 
-# COLORS
-PINK    = \x1b[35m
-BLUE    = \x1b[34m
-YELLOW  = \x1b[33m
-GREEN   = \x1b[32m
-RED     = \x1b[31m
-MAGENTA = \x1b[35m
+SRCS_LIBFT += $(SRCS_PRINTF)
 
-RESET   = \x1b[0m
+OBJ = $(patsubst %,$(OBJ_DIR)/%,$(SRC:.c=.o))
+SRC = $(addprefix $(SRC_DIR)/, $(SRCS_LIBFT))
 
-OBJ = $(SRCS:.c=.o)
 
-OBJ_BONUS = $(BONUS:.c=.o)
 
-ifdef WITH_BONUS
-OBJ_FILES = $(OBJ) $(OBJ_BONUS)
-else
-OBJ_FILES = $(OBJ)
-endif
-
-FLAGS = -Wextra -Werror -Wall
 
 all: $(NAME)
 
-$(NAME): $(OBJ_FILES)
-	ar rc $(NAME) $(OBJ_FILES)
-	@echo "$(RED)Done $(GREEN)COM$(YELLOW)PI$(BLUE)LING $(PINK)LIBFT$(RESET) :)"
+$(NAME): $(OBJ)
+	ar rc $(NAME) $(OBJ)
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-	@echo "$(RED)COMPILING $(GREEN)PLEASE $(YELLOW)GI$(BLUE)VE $(PINK)IT A MOMENT$(RESET) :)"
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-bonus: 
-	@$(MAKE) WITH_BONUS=1 all
 clean:
-	rm  -f $(OBJ) $(OBJ_BONUS)
-	@echo "$(RED)CLEANING $(GREEN)IN $(YELLOW)PROCE$(BLUE)SS $(RESET) :)"
+	rm  -rf $(OBJ_DIR)
 
 fclean:	clean
 	rm -f ${NAME}
-	@echo "$(GREEN)ALL CLEANED $(RESET) :)"
 	
-re: @fclean all
+re: fclean all
 
-.PHONY: @all clean fclean re
+.PHONY: all clean fclean re
